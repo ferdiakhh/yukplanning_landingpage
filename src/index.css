@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-serif {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-editorial {
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+}
+
+.font-sans {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Subtle elegant glow and borders */
+.wedding-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 203, 198, 0.45);
+  box-shadow: 0 4px 20px -2px rgba(92, 34, 45, 0.04);
+}
+
+.wedding-card-dark {
+  background: #5C222D;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFF9F7;
+}
+
+.glass-nav {
+  background: rgba(250, 247, 244, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 203, 198, 0.35);
+}

@@ -1,0 +1,6 @@
+{
+  "name": "YukPlanner - SaaS Wedding Planner",
+  "description": "Platform wedding planner elegan untuk calon pengantin Indonesia: pencatatan tabungan komitmen, alokasi bujet real-time, manajemen vendor, dan daftar tamu RSVP.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
