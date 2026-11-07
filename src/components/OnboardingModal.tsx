@@ -248,9 +248,17 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   };
 
   const rawDashboardUrl = (orderStatus?.dashboard_url || DEFAULT_DASHBOARD_URL).replace(/\/$/, '');
-  const dashboardLoginUrl = rawDashboardUrl.includes('#')
-    ? `${rawDashboardUrl}${rawDashboardUrl.includes('?') ? '&' : '?'}email=${encodeURIComponent(customerEmail.trim())}`
-    : `${rawDashboardUrl}/#/login?email=${encodeURIComponent(customerEmail.trim())}`;
+  const dashboardParams = new URLSearchParams();
+  if (orderStatus?.invoice_number) {
+    dashboardParams.set('invoice', orderStatus.invoice_number);
+  }
+  const targetEmail = (orderStatus?.customer_email || customerEmail).trim();
+  if (targetEmail) {
+    dashboardParams.set('email', targetEmail);
+  }
+  const dashboardLoginUrl = dashboardParams.toString()
+    ? `${rawDashboardUrl}/?${dashboardParams.toString()}`
+    : rawDashboardUrl;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/55 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">

@@ -11,7 +11,7 @@ export const DASHBOARD_URL: string = (
   import.meta.env.VITE_DASHBOARD_URL || 'https://app.yukplanning.tech'
 ).replace(/\/$/, '');
 
-export const LOGIN_URL: string = `${DASHBOARD_URL}/#/login`;
+export const LOGIN_URL: string = DASHBOARD_URL;
 
 export const SUPPORT_EMAIL: string =
   import.meta.env.VITE_SUPPORT_EMAIL || 'halo@yukplanning.tech';
