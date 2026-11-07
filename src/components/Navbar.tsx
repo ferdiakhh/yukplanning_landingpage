@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn } from 'lucide-react';
+import { LOGIN_URL } from '../config/env';
 
 interface NavbarProps {
   onOpenModal: () => void;
@@ -12,25 +13,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenModal }) => {
     { label: 'Fitur Utama', href: '#fitur' },
     { label: 'Kalkulator Bujet', href: '#simulasi' },
     { label: 'Kisah Pasangan', href: '#testimoni' },
-    { label: 'Paket Biaya', href: '#harga' },
+    { label: 'Harga Lifetime', href: '#harga' },
     { label: 'Tanya Jawab', href: '#faq' },
   ];
 
   return (
     <header className="sticky top-0 z-50 glass-nav transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-18 flex items-center justify-between gap-4 md:gap-8">
-        {/* Zone 1: Single text element brand wordmark in display face */}
-        <a 
-          href="#" 
+        {/* Zone 1: Brand wordmark */}
+        <a
+          href="#"
           className="flex items-center gap-2 sm:gap-2.5 text-xl sm:text-2xl font-serif font-semibold text-[#4A1D24] tracking-tight whitespace-nowrap shrink-0 hover:opacity-90 transition-opacity"
         >
           <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F5D8DB] text-[#7A2A38] flex items-center justify-center text-xs sm:text-sm font-serif italic border border-[#EAC5C9]">
             Y
           </span>
-          <span>YukPlanner</span>
+          <span>YukPlanning</span>
         </a>
 
-        {/* Zone 2: 4-5 concise single-line text links (Desktop) */}
+        {/* Zone 2: Navigation links (Desktop) */}
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#6B4C53]">
           {navLinks.map((link) => (
             <a
@@ -43,14 +44,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenModal }) => {
           ))}
         </nav>
 
-        {/* Zone 3: 1 primary action + Mobile Menu Hamburger */}
+        {/* Zone 3: Login Link + Primary Checkout CTA + Mobile Menu Hamburger */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <a
+            href={LOGIN_URL}
+            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-[#5C222D] hover:bg-[#FAF0EE] rounded-xl transition-colors"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>Masuk</span>
+          </a>
+
           <button
             type="button"
             onClick={onOpenModal}
-            className="px-3.5 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-[#6A2330] hover:bg-[#561B26] active:scale-98 rounded-xl shadow-xs transition-all whitespace-nowrap shrink-0 cursor-pointer"
+            className="px-3.5 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-semibold text-white bg-[#6A2330] hover:bg-[#561B26] active:scale-98 rounded-xl shadow-xs transition-all whitespace-nowrap shrink-0 cursor-pointer"
           >
-            Coba Gratis
+            Beli Akses — Rp 40.000
           </button>
 
           {/* Mobile hamburger button */}
@@ -78,7 +87,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenModal }) => {
               {link.label}
             </a>
           ))}
-          <div className="pt-2 border-t border-[#EFE0DB]">
+          <div className="pt-2 border-t border-[#EFE0DB] space-y-2">
+            <a
+              href={LOGIN_URL}
+              className="w-full py-2.5 text-sm font-semibold text-[#5C222D] bg-[#FFF2F0] border border-[#ECD1D5] rounded-xl flex items-center justify-center gap-1.5"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>Sudah Punya Akun? Masuk Dashboard</span>
+            </a>
             <button
               type="button"
               onClick={() => {
@@ -87,7 +103,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenModal }) => {
               }}
               className="w-full py-2.5 text-sm font-semibold text-white bg-[#6A2330] hover:bg-[#561B26] rounded-xl text-center shadow-xs cursor-pointer"
             >
-              Mulai Rencanakan Berdua — Gratis
+              Dapatkan Akses Selamanya — Rp 40.000
             </button>
           </div>
         </div>

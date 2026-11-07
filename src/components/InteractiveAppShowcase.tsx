@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DASHBOARD_HOSTNAME } from '../config/env';
 import { 
   Heart, 
   Calendar, 
@@ -77,7 +78,7 @@ export const InteractiveAppShowcase: React.FC = () => {
   const handleAddDeposit = (e: React.FormEvent) => {
     e.preventDefault();
     const amountNum = parseInt(newDepositAmount.replace(/\D/g, ''), 10) || 1000000;
-    const contributorLabel = newDepositContributor === 'pria' ? 'amba (Pria)' : newDepositContributor === 'wanita' ? 'ciimut (Wanita)' : 'Keduanya (Bersama)';
+    const contributorLabel = newDepositContributor === 'pria' ? 'Andi (Pria)' : newDepositContributor === 'wanita' ? 'Citra (Wanita)' : 'Keduanya (Bersama)';
     
     const newEntry: DepositItem = {
       id: `dep-${Date.now()}`,
@@ -113,7 +114,7 @@ export const InteractiveAppShowcase: React.FC = () => {
             <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#E4CEB5]"></div>
             <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#BFD4B2]"></div>
             <span className="ml-1 sm:ml-2 text-[11px] sm:text-xs font-medium text-[#7D5A61] hidden sm:inline">
-              app.yukplanner.com/amba-ciimut
+              {DASHBOARD_HOSTNAME}
             </span>
           </div>
 
@@ -173,10 +174,10 @@ export const InteractiveAppShowcase: React.FC = () => {
                   20 Des 2026
                 </span>
                 <span aria-hidden="true">·</span>
-                <span className="text-[#874A55] font-medium">#AmbaCiimutMenikah</span>
+                <span className="text-[#874A55] font-medium">#AndiCitraMenikah</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#3B151C] tracking-tight">
-                amba & ciimut
+                Andi & Citra
               </h2>
             </div>
 
@@ -593,13 +594,13 @@ export const InteractiveAppShowcase: React.FC = () => {
 
                     <div className="grid grid-cols-2 gap-3 text-xs">
                       <div className="p-3 bg-[#F4F8FA] rounded-xl border border-[#DEEBF1]">
-                        <div className="text-[#4E768C] font-medium">amba (Pria)</div>
+                        <div className="text-[#4E768C] font-medium">Andi (Pria)</div>
                         <div className="text-sm font-bold text-[#2A4959] mt-0.5">
                           {formatRupiah(maleTotal)}
                         </div>
                       </div>
                       <div className="p-3 bg-[#FFF6F7] rounded-xl border border-[#FBE3E6]">
-                        <div className="text-[#964755] font-medium">ciimut (Wanita)</div>
+                        <div className="text-[#964755] font-medium">Citra (Wanita)</div>
                         <div className="text-sm font-bold text-[#5C222D] mt-0.5">
                           {formatRupiah(femaleTotal)}
                         </div>
@@ -656,7 +657,7 @@ export const InteractiveAppShowcase: React.FC = () => {
                             : 'text-[#7D5A61] hover:text-[#561B26]'
                         }`}
                       >
-                        amba (Pria)
+                        Andi (Pria)
                       </button>
                       <button
                         type="button"
@@ -667,7 +668,7 @@ export const InteractiveAppShowcase: React.FC = () => {
                             : 'text-[#7D5A61] hover:text-[#561B26]'
                         }`}
                       >
-                        ciimut (Wanita)
+                        Citra (Wanita)
                       </button>
                       <button
                         type="button"
@@ -767,8 +768,8 @@ export const InteractiveAppShowcase: React.FC = () => {
                           onChange={(e) => setNewDepositContributor(e.target.value as any)}
                           className="w-full px-3.5 py-2 text-xs border border-[#DEC2C6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#873646] bg-white"
                         >
-                          <option value="pria">amba (Pria)</option>
-                          <option value="wanita">ciimut (Wanita)</option>
+                          <option value="pria">Andi (Pria)</option>
+                          <option value="wanita">Citra (Wanita)</option>
                           <option value="bersama">Keduanya (Bersama 50:50)</option>
                         </select>
                       </div>

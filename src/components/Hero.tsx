@@ -50,7 +50,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenModal }) => {
                 onClick={onOpenModal}
                 className="px-7 py-3.5 text-sm font-semibold text-white bg-[#6A2330] hover:bg-[#541B26] active:scale-98 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Mulai Rencanakan Berdua — Gratis</span>
+                <span>Dapatkan Akses Selamanya — Rp 40.000</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
               <a
@@ -68,7 +68,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenModal }) => {
               <div className="flex items-center -space-x-2.5">
                 <img
                   src="/images/hero_wedding_couple.jpg"
-                  alt="Pasangan Pengantin Amba dan Ciimut"
+                  alt="Pasangan Pengantin Andi dan Citra"
                   referrerPolicy="no-referrer"
                   className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-2xs"
                 />

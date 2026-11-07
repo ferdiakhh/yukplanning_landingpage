@@ -62,7 +62,7 @@ export const HeroVisual: React.FC<HeroVisualProps> = ({ onOpenAppDemo }) => {
               THE WEDDING JOURNEY
             </div>
             <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight drop-shadow-sm">
-              amba & ciimut
+              Andi & Citra
             </h3>
             <p className="text-[11px] sm:text-xs text-[#F2CAD2] mt-0.5 font-editorial italic">
               "20 Desember 2026 • Bersama Mengukir Janji Suci"
@@ -120,8 +120,8 @@ export const HeroVisual: React.FC<HeroVisualProps> = ({ onOpenAppDemo }) => {
             <div className="h-full bg-[#C75D6E]" style={{ width: '32%' }}></div>
           </div>
           <div className="flex justify-between text-[9px] text-[#7D5A61]">
-            <span>amba: 68%</span>
-            <span>ciimut: 32%</span>
+            <span>Andi: 68%</span>
+            <span>Citra: 32%</span>
           </div>
         </div>
 
