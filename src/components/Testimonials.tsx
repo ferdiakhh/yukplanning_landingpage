@@ -1,15 +1,15 @@
 import React from 'react';
-import { Heart, Quote } from 'lucide-react';
+import { Heart, Quote, Star, CheckCircle } from 'lucide-react';
 import { COUPLE_TESTIMONIALS } from '../data/mockData';
 
 export const Testimonials: React.FC = () => {
   return (
-    <section id="testimoni" className="py-16 sm:py-20 bg-white border-t border-[#EFE2DF]">
+    <section id="testimoni" className="py-16 sm:py-24 bg-white border-t border-[#EFE2DF]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-          <div className="flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#9E5564] mb-2">
-            <Heart className="w-3.5 h-3.5 text-[#9E5564] fill-current" />
-            <span>Kisah Pasangan Pengantin</span>
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#9E5564] bg-[#FFF0F2] px-3.5 py-1 rounded-full border border-[#F5CCD3] mb-3">
+            <Heart className="w-3.5 h-3.5 fill-current" />
+            <span>Kisah Nyata Pasangan Bahagia</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#3B151C] tracking-tight">
             Menuju Hari Bahagia dengan Hati Tenang dan Finansial Sehat
@@ -20,37 +20,55 @@ export const Testimonials: React.FC = () => {
         </div>
 
         {/* 3 Real Testimonial Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7">
           {COUPLE_TESTIMONIALS.map((item, idx) => {
+            const hasPhoto = idx < 2;
             const photoSrc = idx === 0 
               ? '/images/wedding_couple_sunset.jpg' 
-              : idx === 1 
-              ? '/images/hero_wedding_couple.jpg' 
-              : '/images/wedding_rings_flatlay.jpg';
+              : '/images/hero_wedding_couple.jpg';
 
             return (
               <div
                 key={idx}
-                className="bg-[#FAF5F2] p-5 sm:p-7 rounded-3xl border border-[#EEDBD7] shadow-xs flex flex-col justify-between hover:border-[#D6A7AD] transition-all"
+                className="bg-[#FAF5F2] p-6 sm:p-8 rounded-3xl border border-[#EEDBD7] shadow-xs flex flex-col justify-between hover:border-[#D6A7AD] hover:shadow-md transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={photoSrc}
-                        alt={item.coupleNames}
-                        referrerPolicy="no-referrer"
-                        className="w-10 h-10 rounded-full object-cover border-2 border-[#EAC5C9] shadow-2xs"
-                      />
-                      <span className="text-xs font-serif font-bold text-[#5C222D]">
-                        {item.avatarText}
-                      </span>
+                      {hasPhoto ? (
+                        <img
+                          src={photoSrc}
+                          alt={item.coupleNames}
+                          referrerPolicy="no-referrer"
+                          className="w-12 h-12 rounded-full object-cover border-2 border-[#EAC5C9] shadow-2xs"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#873646] to-[#5C222D] text-[#FFF0F2] font-serif font-bold text-sm flex items-center justify-center border-2 border-[#EAC5C9] shadow-2xs">
+                          {item.avatarText}
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-serif font-bold text-sm text-[#3B151C] leading-snug">
+                          {item.coupleNames}
+                        </div>
+                        <div className="flex items-center gap-1 text-[11px] text-[#4F7A43] font-medium mt-0.5">
+                          <CheckCircle className="w-3 h-3" />
+                          <span>Pengguna Terverifikasi</span>
+                        </div>
+                      </div>
                     </div>
                     <Quote className="w-5 h-5 text-[#D6A7AD]" />
                   </div>
 
+                  {/* Rating Stars */}
+                  <div className="flex items-center gap-1 text-[#D48238] mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                    ))}
+                  </div>
+
                   {/* Measurable Outcome Kicker */}
-                  <div className="text-xs font-bold text-[#5C222D] bg-[#FCEBEF] px-2.5 py-1 rounded-lg inline-block mb-3">
+                  <div className="text-xs font-bold text-[#5C222D] bg-[#FCEBEF] px-3 py-1 rounded-xl inline-block mb-3 border border-[#F5CCD3]/60">
                     ✨ {item.savingsOutcome}
                   </div>
 
@@ -59,15 +77,11 @@ export const Testimonials: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Author Metadata - Unboxed Text with Separators */}
+                {/* Author Metadata */}
                 <div className="pt-5 mt-6 border-t border-[#EFE0DB]">
-                  <div className="font-serif font-bold text-sm text-[#3B151C]">
-                    {item.coupleNames}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-[#7A5A62] mt-0.5">
+                  <div className="flex items-center justify-between text-xs text-[#7A5A62]">
                     <span>{item.location}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{item.weddingDate}</span>
+                    <span className="font-medium text-[#8C3442]">{item.weddingDate}</span>
                   </div>
                 </div>
               </div>

@@ -152,7 +152,7 @@ export const INITIAL_VENDORS: VendorItem[] = [
 
 export const COUPLE_TESTIMONIALS = [
   {
-    quote: 'Dulu sebelum pakai YukPlanner, kami sering berdebat tiap kali bahas alokasi bujet katering dan DP gedung. Dengan fitur tabungan berdua 50:50 dan dashboard real-time, kami tahu persis kapan harus setor tanpa rasa sungkan. Kami berhasil hemat Rp 21 Juta!',
+    quote: 'Dulu sebelum pakai YukPlanning, kami sering berdebat tiap kali bahas alokasi bujet katering dan DP gedung. Dengan fitur tabungan berdua 50:50 dan dashboard real-time, kami tahu persis kapan harus setor tanpa rasa sungkan. Kami berhasil hemat Rp 21 Juta!',
     coupleNames: 'Raditya & Tania Maharani',
     location: 'Jakarta Selatan',
     weddingDate: 'Menikah 14 September 2026',
@@ -179,23 +179,38 @@ export const COUPLE_TESTIMONIALS = [
 
 export const FAQS = [
   {
-    question: 'Bagaimana cara calon pengantin pria dan wanita menggunakan YukPlanner bersama?',
+    category: 'Kolaborasi & Akun',
+    question: 'Bagaimana cara calon pengantin pria dan wanita menggunakan YukPlanning bersama?',
     answer: 'Cukup satu orang yang membuat rencana pernikahan, lalu bagikan tautan undangan khusus ke pasangan. Keduanya akan memiliki akses masuk mandiri dengan sinkronisasi real-time. Setiap penambahan setoran tabungan, pembayaran vendor, atau checklist tugas akan langsung terupdate di layar masing-masing.',
   },
   {
+    category: 'Keamanan Data',
     question: 'Apakah data tabungan dan nominal finansial kami aman dan terjaga kerahasiaannya?',
     answer: 'Sangat aman. Privasi data pernikahan Anda adalah prioritas kami. Semua data finansial dienkripsi standar perbankan dan hanya dapat dilihat oleh Anda dan pasangan Anda yang terdaftar pada tautan pernikahan tersebut.',
   },
   {
+    category: 'Kustomisasi',
     question: 'Apakah alokasi anggaran bisa disesuaikan untuk konsep Intimate Wedding atau Adat?',
-    answer: 'Tentu bisa! YukPlanner menyediakan template alokasi bujet yang fleksibel. Anda bebas menambah, mengurangi kategori, atau mengubah persentase pagu anggaran sesuai kebutuhan acara adat besar, pesta kebun intim, maupun akad sederhana.',
+    answer: 'Tentu bisa! YukPlanning menyediakan template alokasi bujet yang fleksibel. Anda bebas menambah, mengurangi kategori, atau mengubah persentase pagu anggaran sesuai kebutuhan acara adat besar, pesta kebun intim, maupun akad sederhana.',
   },
   {
+    category: 'Fitur',
     question: 'Apakah data anggaran dan vendor bisa diekspor ke format PDF atau Excel?',
     answer: 'Ya, Anda dapat mengunduh ringkasan buku rencana pernikahan lengkap dalam format PDF rapi atau file Excel yang siap dibagikan kepada orang tua, keluarga besar, maupun tim Wedding Organizer (WO) Anda.',
   },
   {
+    category: 'Biaya & Akses',
     question: 'Apakah ada biaya langganan bulanan atau biaya tambahan tersembunyi?',
     answer: 'Sama sekali tidak ada biaya langganan bulanan. YukPlanning menggunakan skema Sekali Bayar untuk Selamanya (One-Time Payment) sebesar Rp 40.000 melalui Midtrans Snap (QRIS, Virtual Account, E-Wallet). Setelah pembayaran lunas, akun Anda langsung aktif dan dikirim otomatis ke email Anda.',
+  },
+  {
+    category: 'Fleksibilitas',
+    question: 'Bagaimana jika tanggal pernikahan kami diundur atau belum pasti?',
+    answer: 'Tidak masalah! Akses akun YukPlanning Anda berlaku selamanya tanpa tanggal kedaluwarsa. Anda dapat mengubah tanggal akad atau resepsi kapan saja di menu pengaturan dashboard tanpa biaya tambahan sepeser pun.',
+  },
+  {
+    category: 'Bantuan',
+    question: 'Bagaimana jika saya membutuhkan panduan atau bantuan teknis?',
+    answer: 'Tim bantuan YukPlanning siap membantu Anda melalui WhatsApp resmi dan email support. Panduan langkah demi langkah dan customer care responsif siap mendampingi Anda sampai hari H.',
   },
 ];

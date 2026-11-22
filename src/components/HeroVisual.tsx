@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Sparkles, Flame, Calendar, PiggyBank, ArrowUpRight } from 'lucide-react';
+import { Heart, Sparkles, Flame, Calendar, PiggyBank, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 
 interface HeroVisualProps {
   onOpenAppDemo: () => void;
@@ -11,8 +11,8 @@ export const HeroVisual: React.FC<HeroVisualProps> = ({ onOpenAppDemo }) => {
   return (
     <div className="relative w-full max-w-lg mx-auto lg:max-w-none px-1 sm:px-0">
       {/* Ambient background glow */}
-      <div className="absolute -top-6 -right-6 w-60 sm:w-80 h-60 sm:h-80 bg-gradient-to-br from-[#EAB0B8]/30 via-[#F7D2B7]/25 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute -bottom-6 -left-6 w-60 sm:w-72 h-60 sm:h-72 bg-gradient-to-tr from-[#C75D6E]/20 via-[#F5D8DB]/30 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute -top-6 -right-6 w-60 sm:w-80 h-60 sm:h-80 bg-gradient-to-br from-[#EAB0B8]/35 via-[#F7D2B7]/25 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute -bottom-6 -left-6 w-60 sm:w-72 h-60 sm:h-72 bg-gradient-to-tr from-[#C75D6E]/20 via-[#F5D8DB]/35 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
 
       {/* Main Wedding Arched Canvas */}
       <div className="relative rounded-t-[100px] sm:rounded-t-[130px] rounded-b-3xl border border-[#EAC5C9] bg-gradient-to-b from-[#FFFDFD] via-[#FAF4F0] to-[#F5ECE6] p-3 sm:p-6 shadow-xl sm:shadow-2xl overflow-visible">
@@ -41,9 +41,8 @@ export const HeroVisual: React.FC<HeroVisualProps> = ({ onOpenAppDemo }) => {
             src="/images/hero_wedding_couple.jpg"
             alt="Foto Romantis Calon Pengantin Wedding Planner"
             referrerPolicy="no-referrer"
-            className="absolute inset-0 w-full h-full object-cover object-top filter brightness-[0.88] contrast-[1.05] group-hover:scale-103 transition-transform duration-700 pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover object-top filter brightness-[0.88] contrast-[1.05] group-hover:scale-104 transition-transform duration-700 pointer-events-none"
             onError={(e) => {
-              // Graceful fallback if image is blocked
               (e.target as HTMLElement).style.display = 'none';
             }}
           />
@@ -93,13 +92,13 @@ export const HeroVisual: React.FC<HeroVisualProps> = ({ onOpenAppDemo }) => {
           </div>
         </div>
 
-        {/* FLOATING GLASSMORPHISM CARDS (Positioned responsively) */}
+        {/* FLOATING GLASSMORPHISM CARDS (Positioned responsively with interactive highlight) */}
         
         {/* Floating Card 1: Top-Left Tabungan Komitmen */}
         <div 
           onClick={() => setActiveCard('savings')}
           className={`absolute -top-3 left-1 sm:-left-5 max-w-[170px] sm:max-w-[220px] bg-white/95 backdrop-blur-md p-2.5 sm:p-3.5 rounded-2xl border border-[#ECD1D5] shadow-lg sm:shadow-xl transition-all cursor-pointer hover:scale-102 z-20 ${
-            activeCard === 'savings' ? 'ring-2 ring-[#873646]' : ''
+            activeCard === 'savings' ? 'ring-2 ring-[#873646] shadow-2xl scale-102' : ''
           }`}
         >
           <div className="flex items-center justify-between mb-1">
@@ -129,12 +128,12 @@ export const HeroVisual: React.FC<HeroVisualProps> = ({ onOpenAppDemo }) => {
         <div 
           onClick={() => setActiveCard('vendor')}
           className={`absolute -bottom-3 right-1 sm:-right-5 max-w-[170px] sm:max-w-[230px] bg-white/95 backdrop-blur-md p-2.5 sm:p-3.5 rounded-2xl border border-[#ECD1D5] shadow-lg sm:shadow-xl transition-all cursor-pointer hover:scale-102 z-20 ${
-            activeCard === 'vendor' ? 'ring-2 ring-[#873646]' : ''
+            activeCard === 'vendor' ? 'ring-2 ring-[#873646] shadow-2xl scale-102' : ''
           }`}
         >
           <div className="flex items-center gap-1.5 mb-0.5">
             <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-[#EBF5E9] text-[#2A7545] flex items-center justify-center text-[10px] sm:text-xs font-bold shrink-0">
-              ✓
+              <CheckCircle2 className="w-3.5 h-3.5" />
             </span>
             <div>
               <div className="text-[10px] sm:text-[11px] font-bold text-[#3B151C] leading-tight truncate max-w-[110px] sm:max-w-none">
@@ -152,7 +151,7 @@ export const HeroVisual: React.FC<HeroVisualProps> = ({ onOpenAppDemo }) => {
         </div>
 
         {/* Floating Card 3: Top Right Badge */}
-        <div className="absolute top-1/2 right-2 -translate-y-1/2 hidden sm:flex items-center gap-2 bg-[#2E0F16]/90 text-white backdrop-blur-md py-1.5 px-3 rounded-xl border border-white/20 shadow-lg text-xs z-20">
+        <div className="absolute top-1/2 right-2 -translate-y-1/2 hidden sm:flex items-center gap-2 bg-[#2E0F16]/90 text-white backdrop-blur-md py-1.5 px-3 rounded-xl border border-white/20 shadow-lg text-xs z-20 animate-float">
           <Sparkles className="w-3.5 h-3.5 text-[#F7DF94]" />
           <div>
             <div className="font-bold text-[10px]">Real-Time Sync</div>
@@ -164,14 +163,14 @@ export const HeroVisual: React.FC<HeroVisualProps> = ({ onOpenAppDemo }) => {
       {/* Switcher below frame */}
       <div className="mt-5 text-center flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
         <span className="text-xs text-[#7A5A62] font-medium">
-          💍 Ingin mencoba demo dashboard lengkap?
+          💍 Ingin mencoba langsung fitur interaktifnya?
         </span>
         <button
           type="button"
           onClick={onOpenAppDemo}
           className="text-xs font-bold text-[#6A2330] hover:text-[#4A1D24] bg-white px-3.5 py-1.5 rounded-xl border border-[#EAC5C9] shadow-2xs hover:shadow-xs flex items-center gap-1 cursor-pointer transition-all"
         >
-          <span>Eksplorasi Demo di Bawah</span>
+          <span>Eksplorasi Demo Dashboard</span>
           <ArrowUpRight className="w-3 h-3" />
         </button>
       </div>

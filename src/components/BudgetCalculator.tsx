@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, ArrowRight, PiggyBank, Sparkles, AlertCircle } from 'lucide-react';
+import { Calculator, ArrowRight, PiggyBank, Sparkles, Copy, Check, CheckCircle2 } from 'lucide-react';
 
 interface BudgetCalculatorProps {
   onOpenModalWithTarget?: (target: number) => void;
@@ -10,6 +10,7 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onOpenModalW
   const [currentSavings, setCurrentSavings] = useState<number>(35000000);
   const [monthsRemaining, setMonthsRemaining] = useState<number>(8);
   const [splitRatio, setSplitRatio] = useState<number>(50); // % Pria (e.g. 50 = 50:50, 60 = 60:40)
+  const [copied, setCopied] = useState(false);
 
   // Calculations
   const shortfall = Math.max(0, targetBudget - currentSavings);
@@ -20,6 +21,13 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onOpenModalW
   const formatRupiah = (val: number) => {
     return 'Rp ' + val.toLocaleString('id-ID');
   };
+
+  // Concept Presets
+  const conceptPresets = [
+    { name: 'Intimate Wedding', budget: 70000000, desc: '150 - 250 Tamu • Venue Terbuka / Kafe' },
+    { name: 'Resepsi Gedung Standar', budget: 120000000, desc: '400 - 500 Tamu • Tradisional / Nasional' },
+    { name: 'Grand Ballroom Mewah', budget: 250000000, desc: '800+ Tamu • Adat Lengkap & Orkestra' },
+  ];
 
   // Indonesian Wedding Industry Standard Allocations
   const allocations = [
@@ -32,30 +40,72 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onOpenModalW
     { name: 'Dana Darurat / Cadangan', pct: 4, desc: 'Biaya tak terduga hari H', color: 'bg-[#4F7A43]' },
   ];
 
+  const handleCopySummary = () => {
+    const lines = [
+      `📊 Rencana Anggaran Pernikahan (YukPlanning)`,
+      `Target Total: ${formatRupiah(targetBudget)}`,
+      `Tabungan Terkumpul: ${formatRupiah(currentSavings)}`,
+      `Sisa Waktu: ${monthsRemaining} Bulan`,
+      `Rekomendasi Setoran: ${formatRupiah(monthlyTotalNeeded)}/bulan`,
+      `- Calon Suami (${splitRatio}%): ${formatRupiah(maleMonthly)}/bulan`,
+      `- Calon Istri (${100 - splitRatio}%): ${formatRupiah(femaleMonthly)}/bulan`,
+      `Kekurangan Dana: ${formatRupiah(shortfall)}`,
+    ];
+    navigator.clipboard?.writeText(lines.join('\n'));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
   return (
     <section id="simulasi" className="py-20 bg-white border-t border-[#EFE2DF]">
-      <div className="max-w-6xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Title */}
-        <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#9E5564] mb-2">
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-14">
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#9E5564] bg-[#FFF0F2] px-3.5 py-1 rounded-full border border-[#F5CCD3] mb-3">
             <Calculator className="w-3.5 h-3.5" />
-            <span>Kalkulator Komitmen Capeng</span>
+            <span>Kalkulator Komitmen Finansial</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#3B151C] tracking-tight">
+          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#3B151C] tracking-tight">
             Hitung Simulasi Tabungan & Pagu Anggaran Anda
           </h2>
-          <p className="mt-3 text-base text-[#6E5057]">
+          <p className="mt-2.5 sm:mt-3 text-sm sm:text-base text-[#6E5057]">
             Cari tahu berapa yang perlu Anda dan pasangan tabung tiap bulan secara realistis agar target tercapai tanpa beban hutang.
           </p>
+        </div>
+
+        {/* Concept Preset Buttons */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-4xl mx-auto">
+          {conceptPresets.map((preset) => {
+            const isSelected = targetBudget === preset.budget;
+            return (
+              <button
+                key={preset.name}
+                type="button"
+                onClick={() => setTargetBudget(preset.budget)}
+                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#FAF0F2] border-[#8C3442] shadow-xs'
+                    : 'bg-[#FAF5F2] border-[#EFE0DB] hover:border-[#D6A7AD]'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-serif font-bold text-sm text-[#3B151C]">{preset.name}</span>
+                  {isSelected && <CheckCircle2 className="w-4 h-4 text-[#8C3442]" />}
+                </div>
+                <div className="text-xs font-bold text-[#6A2330] font-mono">{formatRupiah(preset.budget)}</div>
+                <div className="text-[11px] text-[#7A5A62] mt-0.5">{preset.desc}</div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Two-Column Interactive Calculator Container */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Controls Column (5 cols) */}
-          <div className="lg:col-span-5 bg-[#FAF5F2] p-6 sm:p-8 rounded-3xl border border-[#EEDBD7] space-y-6">
+          <div className="lg:col-span-5 bg-[#FAF5F2] p-5 sm:p-8 rounded-3xl border border-[#EEDBD7] space-y-6 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-[#EFE0DB]">
               <span className="font-serif font-bold text-lg text-[#3B151C]">Parameter Rencana</span>
-              <span className="text-xs text-[#8C5E68]">Bisa diubah fleksibel</span>
+              <span className="text-xs text-[#8C5E68]">Bisa disesuaikan</span>
             </div>
 
             {/* Target Budget Input & Presets */}
@@ -110,6 +160,11 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onOpenModalW
                 onChange={(e) => setCurrentSavings(Number(e.target.value))}
                 className="w-full h-2 bg-[#E6D4D1] rounded-lg appearance-none cursor-pointer accent-[#5C222D]"
               />
+              <div className="flex justify-between text-[11px] text-[#7A5A62] mt-1">
+                <span>Rp 0</span>
+                <span>{Math.round((currentSavings / targetBudget) * 100)}% Terkumpul</span>
+                <span>{formatRupiah(targetBudget)}</span>
+              </div>
             </div>
 
             {/* Months Remaining Slider */}
@@ -158,7 +213,7 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onOpenModalW
                   onClick={() => setSplitRatio(50)}
                   className={`flex-1 py-1.5 text-xs rounded-lg border font-medium cursor-pointer ${
                     splitRatio === 50
-                      ? 'bg-white text-[#5C222D] border-[#C75D6E] shadow-2xs'
+                      ? 'bg-white text-[#5C222D] border-[#C75D6E] shadow-2xs font-bold'
                       : 'bg-[#F2E5E1] text-[#7D5A61] border-transparent'
                   }`}
                 >
@@ -169,7 +224,7 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onOpenModalW
                   onClick={() => setSplitRatio(60)}
                   className={`flex-1 py-1.5 text-xs rounded-lg border font-medium cursor-pointer ${
                     splitRatio === 60
-                      ? 'bg-white text-[#5C222D] border-[#C75D6E] shadow-2xs'
+                      ? 'bg-white text-[#5C222D] border-[#C75D6E] shadow-2xs font-bold'
                       : 'bg-[#F2E5E1] text-[#7D5A61] border-transparent'
                   }`}
                 >
@@ -219,12 +274,12 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onOpenModalW
 
               <div className="mt-4 pt-3 border-t border-white/15 flex items-center justify-between text-xs text-[#F7D8DF]">
                 <span>Sisa kekurangan yang harus dipenuhi:</span>
-                <span className="font-bold font-mono">{formatRupiah(shortfall)}</span>
+                <span className="font-bold font-mono text-sm">{formatRupiah(shortfall)}</span>
               </div>
             </div>
 
             {/* Smart Allocation Breakdown for Indonesian Weddings */}
-            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-[#EEDBD7] shadow-xs">
+            <div className="bg-white p-5 sm:p-7 rounded-3xl border border-[#EEDBD7] shadow-xs">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h4 className="font-serif font-bold text-lg text-[#3B151C]">
@@ -279,15 +334,21 @@ export const BudgetCalculator: React.FC<BudgetCalculatorProps> = ({ onOpenModalW
                 })}
               </div>
 
-              {/* Action Button */}
+              {/* Action Buttons */}
               <div className="mt-6 pt-4 border-t border-[#F2E5E1] flex flex-col sm:flex-row items-center justify-between gap-3">
-                <span className="text-xs text-[#7A5A62]">
-                  💡 Gunakan estimasi ini langsung di akun YukPlanner Anda
-                </span>
+                <button
+                  type="button"
+                  onClick={handleCopySummary}
+                  className="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold text-[#5C222D] bg-[#FFF2F0] hover:bg-[#FCE6E3] border border-[#ECD1D5] rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-[#2A7545]" /> : <Copy className="w-3.5 h-3.5 text-[#8C3442]" />}
+                  <span>{copied ? 'Tersalin ke Clipboard!' : 'Salin Ringkasan Rencana'}</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => onOpenModalWithTarget && onOpenModalWithTarget(targetBudget)}
-                  className="w-full sm:w-auto px-5 py-2.5 text-xs font-semibold text-white bg-[#6A2330] hover:bg-[#541B26] rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                  className="w-full sm:w-auto px-5 py-2.5 text-xs font-bold text-white bg-[#6A2330] hover:bg-[#541B26] rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs"
                 >
                   <span>Buka Rencana dengan Bujet Ini</span>
                   <ArrowRight className="w-3.5 h-3.5" />

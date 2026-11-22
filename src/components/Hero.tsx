@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { ArrowRight, Sparkles, HeartHandshake, ShieldCheck, Heart, Star } from 'lucide-react';
+import { ArrowRight, Sparkles, Heart, Star, CheckCircle, ShieldCheck } from 'lucide-react';
 import { HeroVisual } from './HeroVisual';
 import { InteractiveAppShowcase } from './InteractiveAppShowcase';
 
@@ -15,9 +15,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenModal }) => {
   };
 
   return (
-    <section className="relative pt-6 sm:pt-10 pb-16 sm:pb-20 overflow-hidden">
-      {/* Delicate warm ambient blush glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[650px] bg-gradient-to-b from-[#FCEBEF]/40 via-[#FDF5F2]/30 to-transparent pointer-events-none -z-10" />
+    <section className="relative pt-6 sm:pt-10 pb-16 sm:pb-24 overflow-hidden">
+      {/* Delicate warm ambient blush & champagne glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[700px] bg-gradient-to-b from-[#FCEBEF]/50 via-[#FDF5F2]/40 to-transparent pointer-events-none -z-10" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* 2-COLUMN SPLIT HERO GRID: Romance on the Right, High Conversion on the Left */}
@@ -26,15 +26,15 @@ export const Hero: React.FC<HeroProps> = ({ onOpenModal }) => {
           {/* Left Column (Content & Emotional Hook - 7 Cols) */}
           <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-left">
             {/* Romantic Eyebrow Kicker */}
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:py-1.5 rounded-full bg-[#FFF0F2] border border-[#F5CCD3] text-[11px] sm:text-xs font-semibold text-[#8C3442]">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF0F2] border border-[#F5CCD3] text-[11px] sm:text-xs font-semibold text-[#8C3442] shadow-2xs">
               <Heart className="w-3.5 h-3.5 fill-[#C75D6E] text-[#C75D6E] shrink-0" />
-              <span>Platform Wedding Planner Kolaboratif</span>
+              <span>Platform Wedding Planner Kolaboratif No. 1</span>
               <span aria-hidden="true" className="hidden sm:inline">·</span>
               <span className="text-[#A06443] hidden sm:inline">Transparan & Harmonis</span>
             </div>
 
             {/* Display Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-[#3B151C] tracking-tight leading-[1.18] sm:leading-[1.15] text-balance">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold text-[#3B151C] tracking-tight leading-[1.18] sm:leading-[1.14] text-balance">
               Dua Hati, Satu Rekening Impian Menuju Hari Bahagia.
             </h1>
 
@@ -48,18 +48,34 @@ export const Hero: React.FC<HeroProps> = ({ onOpenModal }) => {
               <button
                 type="button"
                 onClick={onOpenModal}
-                className="px-7 py-3.5 text-sm font-semibold text-white bg-[#6A2330] hover:bg-[#541B26] active:scale-98 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="animate-shimmer px-7 py-4 text-sm font-bold text-white bg-[#6A2330] hover:bg-[#541B26] active:scale-98 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>Dapatkan Akses Selamanya — Rp 40.000</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
               <a
                 href="#simulasi"
-                className="px-6 py-3.5 text-sm font-semibold text-[#5C222D] bg-[#FFF2F0] hover:bg-[#FCE6E3] border border-[#ECD1D5] rounded-xl transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+                className="px-6 py-4 text-sm font-semibold text-[#5C222D] bg-[#FFF2F0] hover:bg-[#FCE6E3] border border-[#ECD1D5] rounded-xl transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4 text-[#9E5564]" />
                 <span>Simulasi Bujet Capeng</span>
               </a>
+            </div>
+
+            {/* Trust highlights directly under CTA */}
+            <div className="flex flex-wrap items-center gap-y-1.5 gap-x-4 text-xs text-[#7A5A62] pt-1">
+              <span className="flex items-center gap-1.5 font-medium">
+                <CheckCircle className="w-3.5 h-3.5 text-[#4F7A43]" />
+                Sekali Bayar untuk Selamanya
+              </span>
+              <span className="flex items-center gap-1.5 font-medium">
+                <CheckCircle className="w-3.5 h-3.5 text-[#4F7A43]" />
+                Sinkronisasi Akun Berdua Real-Time
+              </span>
+              <span className="flex items-center gap-1.5 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#4F7A43]" />
+                Midtrans Instant Delivery
+              </span>
             </div>
 
             {/* Real Couple Social Proof Card Strip */}
@@ -94,14 +110,14 @@ export const Hero: React.FC<HeroProps> = ({ onOpenModal }) => {
                   ))}
                   <span className="text-xs font-bold text-[#3B151C] ml-1">4.9 / 5.0</span>
                 </div>
-                <div className="text-xs text-[#7A5B63] mt-0.5">
+                <div className="text-xs text-[#7A5A62] mt-0.5">
                   Dipercaya <strong className="text-[#3B151C] font-semibold">1.450+ pasangan calon pengantin</strong> di seluruh Indonesia
                 </div>
               </div>
             </div>
 
             {/* Quick Testimonial Snippet Bubble with Real Couple Picture */}
-            <div className="p-3 sm:p-3.5 bg-white rounded-2xl border border-[#EEDBD7] text-xs text-[#5C222D] shadow-2xs flex items-center gap-3 max-w-lg">
+            <div className="p-3.5 bg-white rounded-2xl border border-[#EEDBD7] text-xs text-[#5C222D] shadow-xs flex items-center gap-3 max-w-lg hover:border-[#D9A5AE] transition-all">
               <img
                 src="/images/wedding_couple_sunset.jpg"
                 alt="Radit & Tania"
@@ -130,10 +146,10 @@ export const Hero: React.FC<HeroProps> = ({ onOpenModal }) => {
               ✨ Coba Sendiri Fitur Aplikasinya
             </span>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#3B151C] mt-2 tracking-tight">
-              Tampilan Langsung Dashboard YukPlanner
+              Tampilan Langsung Dashboard YukPlanning
             </h2>
             <p className="text-xs sm:text-sm text-[#7A5A62] mt-1">
-              Ganti tab di bawah untuk melihat Beranda, Pencatatan Tabungan, atau Todo List Persiapan. Anda juga bisa mencoba mencentang checklist atau mencatat setoran baru!
+              Ganti tab di bawah untuk melihat Beranda, Tabungan & Anggaran, Todo List Persiapan, atau Hub Vendor & Tamu. Anda juga bisa mencoba mencentang checklist atau mencatat setoran baru!
             </p>
           </div>
 

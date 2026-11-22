@@ -13,13 +13,17 @@ import {
   ListTodo, 
   ArrowRight,
   ShieldCheck,
-  Check
+  Check,
+  Phone,
+  Send,
+  Clock,
+  AlertTriangle
 } from 'lucide-react';
-import { INITIAL_DEPOSITS, INITIAL_TASKS } from '../data/mockData';
-import { DepositItem, TaskItem } from '../types';
+import { INITIAL_DEPOSITS, INITIAL_TASKS, INITIAL_VENDORS } from '../data/mockData';
+import { DepositItem, TaskItem, VendorItem } from '../types';
 
 export const InteractiveAppShowcase: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'beranda' | 'cashflow' | 'todolist'>('beranda');
+  const [activeTab, setActiveTab] = useState<'beranda' | 'cashflow' | 'todolist' | 'vendors'>('beranda');
   
   // Real-time ticking countdown to Dec 20, 2026
   const [timeLeft, setTimeLeft] = useState({
@@ -58,8 +62,25 @@ export const InteractiveAppShowcase: React.FC = () => {
   // Interactive state for tasks
   const [tasks, setTasks] = useState<TaskItem[]>(INITIAL_TASKS);
 
+  // Interactive state for vendors
+  const [vendors, setVendors] = useState<VendorItem[]>(INITIAL_VENDORS);
+  const [vendorFilter, setVendorFilter] = useState<'all' | 'Deal' | 'Negosiasi'>('all');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   const toggleTask = (taskId: string) => {
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, isCompleted: !t.isCompleted } : t));
+    setTasks(prev => prev.map(t => {
+      if (t.id === taskId) {
+        const nextState = !t.isCompleted;
+        if (nextState) showToast(`Tugas "${t.title}" berhasil diselesaikan! ✨`);
+        return { ...t, isCompleted: nextState };
+      }
+      return t;
+    }));
   };
 
   const completedCount = tasks.filter(t => t.isCompleted).length;
@@ -92,6 +113,7 @@ export const InteractiveAppShowcase: React.FC = () => {
     setDeposits([newEntry, ...deposits]);
     setShowAddDepositModal(false);
     setNewDepositTitle('Alokasi Tabungan Tambahan');
+    showToast(`Setoran baru ${formatRupiah(amountNum)} berhasil ditambahkan! 🎉`);
   };
 
   const filteredDeposits = deposits.filter(d => {
@@ -99,14 +121,31 @@ export const InteractiveAppShowcase: React.FC = () => {
     return d.contributor === depositFilter;
   });
 
+  const filteredVendors = vendors.filter(v => {
+    if (vendorFilter === 'all') return true;
+    return v.status === vendorFilter;
+  });
+
+  const totalVendorBudget = vendors.reduce((acc, v) => acc + v.price, 0);
+  const totalVendorPaid = vendors.reduce((acc, v) => acc + v.paidAmount, 0);
+  const remainingVendorBalance = totalVendorBudget - totalVendorPaid;
+
   const formatRupiah = (num: number) => {
     return 'Rp ' + num.toLocaleString('id-ID');
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#3B151C] text-white px-4 py-2.5 rounded-xl shadow-2xl border border-[#7A303D] text-xs font-semibold flex items-center gap-2 animate-fade-in">
+          <Sparkles className="w-4 h-4 text-[#F7DF94]" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Device frame header / interactive view switcher */}
-      <div className="bg-[#FAF4EE] border border-[#ECD9D5] rounded-2xl shadow-xl overflow-hidden">
+      <div className="bg-[#FAF4EE] border border-[#ECD9D5] rounded-3xl shadow-xl overflow-hidden">
         {/* Browser Top Chrome */}
         <div className="px-3.5 sm:px-5 py-2.5 sm:py-3.5 bg-[#F6ECE7] border-b border-[#ECD9D5] flex items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
@@ -123,7 +162,7 @@ export const InteractiveAppShowcase: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('beranda')}
-              className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === 'beranda'
                   ? 'bg-white text-[#561B26] shadow-xs'
                   : 'text-[#7D5A61] hover:text-[#561B26]'
@@ -134,24 +173,35 @@ export const InteractiveAppShowcase: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('cashflow')}
-              className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === 'cashflow'
                   ? 'bg-white text-[#561B26] shadow-xs'
                   : 'text-[#7D5A61] hover:text-[#561B26]'
               }`}
             >
-              <span className="hidden sm:inline">2. </span>Tabungan<span className="hidden md:inline"> & Anggaran</span>
+              <span className="hidden sm:inline">2. </span>Tabungan & Anggaran
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('todolist')}
-              className={`px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === 'todolist'
                   ? 'bg-white text-[#561B26] shadow-xs'
                   : 'text-[#7D5A61] hover:text-[#561B26]'
               }`}
             >
-              <span className="hidden sm:inline">3. </span>Todo List<span className="hidden md:inline"> Persiapan</span>
+              <span className="hidden sm:inline">3. </span>Todo List Persiapan
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('vendors')}
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                activeTab === 'vendors'
+                  ? 'bg-white text-[#561B26] shadow-xs'
+                  : 'text-[#7D5A61] hover:text-[#561B26]'
+              }`}
+            >
+              <span className="hidden sm:inline">4. </span>Vendor & Tamu
             </button>
           </div>
 
@@ -248,26 +298,34 @@ export const InteractiveAppShowcase: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white p-4 rounded-2xl border border-[#EEDBD7] shadow-xs">
+                <div 
+                  onClick={() => setActiveTab('vendors')}
+                  className="bg-white p-4 rounded-2xl border border-[#EEDBD7] shadow-xs hover:border-[#D6A7AD] transition-all cursor-pointer group"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <span className="w-8 h-8 rounded-xl bg-[#F0F7F2] text-[#3D7D54] flex items-center justify-center">
                       <Users className="w-4 h-4" />
                     </span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#B89CA1] group-hover:text-[#5C222D] group-hover:translate-x-0.5 transition-all" />
                   </div>
                   <div className="text-xs text-[#7D5A61] font-medium">Konfirmasi Tamu</div>
                   <div className="text-lg font-bold text-[#3A141A] font-serif mt-0.5">
-                    4 Pax Hadir
+                    280 Pax Hadir
                   </div>
-                  <div className="text-[11px] text-[#9A7A81] mt-0.5">
-                    dari 29 Kuota Katering
+                  <div className="text-[11px] text-[#3D7D54] font-medium mt-0.5">
+                    70% dari 400 Kuota
                   </div>
                 </div>
 
-                <div className="bg-white p-4 rounded-2xl border border-[#EEDBD7] shadow-xs">
+                <div 
+                  onClick={() => setActiveTab('vendors')}
+                  className="bg-white p-4 rounded-2xl border border-[#EEDBD7] shadow-xs hover:border-[#D6A7AD] transition-all cursor-pointer group"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <span className="w-8 h-8 rounded-xl bg-[#FDF5E6] text-[#A67C2E] flex items-center justify-center">
                       <Store className="w-4 h-4" />
                     </span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#B89CA1] group-hover:text-[#5C222D] group-hover:translate-x-0.5 transition-all" />
                   </div>
                   <div className="text-xs text-[#7D5A61] font-medium">Vendor Utama</div>
                   <div className="text-lg font-bold text-[#3A141A] font-serif mt-0.5">
@@ -431,7 +489,10 @@ export const InteractiveAppShowcase: React.FC = () => {
 
               {/* Bottom Quick Row: Fokus Minggu Ini & Kelola Tamu */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-[#EEDBD7] shadow-xs">
+                <div 
+                  onClick={() => setActiveTab('todolist')}
+                  className="bg-white p-5 rounded-2xl border border-[#EEDBD7] shadow-xs hover:border-[#D6A7AD] transition-all cursor-pointer"
+                >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="w-7 h-7 rounded-lg bg-[#FFF2F0] text-[#8C3442] flex items-center justify-center text-xs font-bold">
@@ -442,13 +503,9 @@ export const InteractiveAppShowcase: React.FC = () => {
                         <p className="text-[11px] text-[#8C6B72]">🎯 Venue & Akad • H-3 Bulan</p>
                       </div>
                     </div>
-                    <button 
-                      type="button"
-                      onClick={() => setActiveTab('todolist')}
-                      className="text-xs text-[#8C3442] font-semibold hover:underline cursor-pointer"
-                    >
+                    <span className="text-xs text-[#8C3442] font-semibold">
                       Semua Tugas →
-                    </button>
+                    </span>
                   </div>
                   <div className="p-3 bg-[#FAF6F3] rounded-xl border border-[#EFE0DB] flex items-start gap-3">
                     <span className="w-4 h-4 rounded-full border border-[#C5A3A8] mt-0.5 shrink-0"></span>
@@ -463,7 +520,10 @@ export const InteractiveAppShowcase: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-2xl border border-[#EEDBD7] shadow-xs">
+                <div 
+                  onClick={() => setActiveTab('vendors')}
+                  className="bg-white p-5 rounded-2xl border border-[#EEDBD7] shadow-xs hover:border-[#D6A7AD] transition-all cursor-pointer"
+                >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="w-7 h-7 rounded-lg bg-[#F0F7F2] text-[#3D7D54] flex items-center justify-center text-xs font-bold">
@@ -471,25 +531,28 @@ export const InteractiveAppShowcase: React.FC = () => {
                       </span>
                       <div>
                         <h5 className="font-bold text-sm text-[#3A141A]">Kelola Tamu & Vendor Hub</h5>
-                        <p className="text-[11px] text-[#8C6B72]">Status RSVP & Katering (29 Pax Kuota)</p>
+                        <p className="text-[11px] text-[#8C6B72]">Status RSVP & Katering (400 Pax Kuota)</p>
                       </div>
                     </div>
+                    <span className="text-xs text-[#3D7D54] font-semibold">
+                      Buka Hub →
+                    </span>
                   </div>
                   <div className="p-3 bg-[#FAF6F3] rounded-xl border border-[#EFE0DB]">
                     <div className="w-full h-2 bg-[#E4D5D2] rounded-full overflow-hidden flex mb-2">
-                      <div className="h-full bg-[#4F7A43]" style={{ width: '15%' }} title="Hadir"></div>
-                      <div className="h-full bg-[#4E7E9E]" style={{ width: '40%' }} title="Menunggu"></div>
-                      <div className="h-full bg-[#D49842]" style={{ width: '45%' }} title="Draf"></div>
+                      <div className="h-full bg-[#4F7A43]" style={{ width: '70%' }} title="Hadir"></div>
+                      <div className="h-full bg-[#4E7E9E]" style={{ width: '22%' }} title="Menunggu"></div>
+                      <div className="h-full bg-[#D49842]" style={{ width: '8%' }} title="Draf"></div>
                     </div>
                     <div className="flex items-center justify-between text-[11px] text-[#6B4C53]">
                       <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-[#4F7A43]"></span> 4 Hadir
+                        <span className="w-2 h-2 rounded-full bg-[#4F7A43]"></span> 280 Hadir
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-[#4E7E9E]"></span> 12 Menunggu
+                        <span className="w-2 h-2 rounded-full bg-[#4E7E9E]"></span> 90 Menunggu
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-[#D49842]"></span> 13 Draf
+                        <span className="w-2 h-2 rounded-full bg-[#D49842]"></span> 30 Draf
                       </span>
                     </div>
                   </div>
@@ -958,6 +1021,216 @@ export const InteractiveAppShowcase: React.FC = () => {
                   </div>
                   <div className="text-[11px] text-[#7D5A61]">Fitting kebaya akad & jas, MUA</div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* VIEW 4: VENDOR & TAMU RSVP (NEW FEATURE HIGHLIGHT) */}
+          {activeTab === 'vendors' && (
+            <div className="mt-6 space-y-6">
+              {/* Dual Summary Card */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                {/* Left: Vendor Hub Management */}
+                <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-[#EEDBD7] shadow-xs space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-8 h-8 rounded-xl bg-[#FFF6E9] text-[#A6752C] flex items-center justify-center text-xs font-bold">
+                          <Store className="w-4 h-4" />
+                        </span>
+                        <div>
+                          <h4 className="font-bold text-[#3B151C]">Vendor Hub & Termin DP</h4>
+                          <p className="text-xs text-[#805D65]">
+                            Pantau DP, pelunasan H-14 hari, & kontak PIC
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 p-1 bg-[#FAF4F1] rounded-xl text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setVendorFilter('all')}
+                        className={`px-2.5 py-1 rounded-lg font-medium cursor-pointer ${
+                          vendorFilter === 'all' ? 'bg-white font-bold text-[#5C222D] shadow-2xs' : 'text-[#7D5A61]'
+                        }`}
+                      >
+                        Semua ({vendors.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setVendorFilter('Deal')}
+                        className={`px-2.5 py-1 rounded-lg font-medium cursor-pointer ${
+                          vendorFilter === 'Deal' ? 'bg-white font-bold text-[#2A7545] shadow-2xs' : 'text-[#7D5A61]'
+                        }`}
+                      >
+                        Deal ({vendors.filter(v => v.status === 'Deal').length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setVendorFilter('Negosiasi')}
+                        className={`px-2.5 py-1 rounded-lg font-medium cursor-pointer ${
+                          vendorFilter === 'Negosiasi' ? 'bg-white font-bold text-[#A6752C] shadow-2xs' : 'text-[#7D5A61]'
+                        }`}
+                      >
+                        Nego ({vendors.filter(v => v.status === 'Negosiasi').length})
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Vendor Financial Progress Bar */}
+                  <div className="p-3.5 bg-[#FAF5F2] rounded-2xl border border-[#EFE0DB]">
+                    <div className="flex items-center justify-between text-xs mb-1.5">
+                      <span className="text-[#6E5057] font-medium">Realisasi Kontrak Terbayar</span>
+                      <span className="font-bold text-[#5C222D]">
+                        {formatRupiah(totalVendorPaid)} / {formatRupiah(totalVendorBudget)}
+                      </span>
+                    </div>
+                    <div className="w-full h-2.5 bg-[#E6D4D1] rounded-full overflow-hidden flex mb-2">
+                      <div 
+                        className="h-full bg-[#4F7A43]" 
+                        style={{ width: `${(totalVendorPaid / totalVendorBudget) * 100}%` }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between text-[11px] text-[#7A5A62]">
+                      <span>✓ DP Masuk: {Math.round((totalVendorPaid / totalVendorBudget) * 100)}%</span>
+                      <span>Sisa Termin Pelunasan: {formatRupiah(remainingVendorBalance)}</span>
+                    </div>
+                  </div>
+
+                  {/* Vendor Items List */}
+                  <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-1">
+                    {filteredVendors.map((vendor) => {
+                      const isFullyPaid = vendor.paidAmount >= vendor.price;
+                      return (
+                        <div
+                          key={vendor.id}
+                          className="p-3.5 rounded-2xl bg-[#FFFDFD] border border-[#EFE0DB] hover:border-[#D6A7AD] transition-all flex items-center justify-between gap-3 text-xs"
+                        >
+                          <div>
+                            <div className="font-bold text-[#3B151C] flex items-center gap-2">
+                              <span>{vendor.name}</span>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-md font-semibold ${
+                                vendor.status === 'Deal'
+                                  ? 'bg-[#EAF5E9] text-[#2A7545]'
+                                  : 'bg-[#FFF5E6] text-[#A6752C]'
+                              }`}>
+                                {vendor.status}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-[#7A5A62] mt-0.5 flex items-center gap-2">
+                              <span>{vendor.category}</span>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">
+                                <Phone className="w-3 h-3 text-[#4F7A43]" />
+                                {vendor.contact}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <div className="font-bold font-mono text-[#3B151C]">
+                              {formatRupiah(vendor.price)}
+                            </div>
+                            <div className="text-[11px] text-[#4F7A43] font-medium">
+                              DP: {formatRupiah(vendor.paidAmount)}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Right: Guest RSVP & Catering Pax Calculator */}
+                <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-[#EEDBD7] shadow-xs flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="w-8 h-8 rounded-xl bg-[#F0F7F2] text-[#3D7D54] flex items-center justify-center text-xs font-bold">
+                          <Users className="w-4 h-4" />
+                        </span>
+                        <div>
+                          <h4 className="font-bold text-[#3B151C]">Buku Tamu & RSVP Presisi</h4>
+                          <p className="text-xs text-[#805D65]">Kontrol porsi katering anti-mubazir</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Kuota Katering Status Box */}
+                    <div className="p-4 bg-[#FAF5F2] rounded-2xl border border-[#EFE0DB] mb-4 space-y-3">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-semibold text-[#3B151C]">Target Kuota Katering</span>
+                        <span className="font-bold font-serif text-[#5C222D] text-base">400 Pax</span>
+                      </div>
+
+                      <div className="w-full h-3 bg-[#E6D4D1] rounded-full overflow-hidden flex">
+                        <div className="h-full bg-[#4F7A43]" style={{ width: '70%' }} title="Hadir (70%)"></div>
+                        <div className="h-full bg-[#4E7E9E]" style={{ width: '22.5%' }} title="Menunggu (22.5%)"></div>
+                        <div className="h-full bg-[#D49842]" style={{ width: '7.5%' }} title="Draf (7.5%)"></div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 text-center text-xs pt-1">
+                        <div className="bg-white p-2 rounded-xl border border-[#EFE0DB]">
+                          <div className="text-[#4F7A43] font-bold">280 Pax</div>
+                          <div className="text-[10px] text-[#7A5A62]">Hadir (70%)</div>
+                        </div>
+                        <div className="bg-white p-2 rounded-xl border border-[#EFE0DB]">
+                          <div className="text-[#4E7E9E] font-bold">90 Pax</div>
+                          <div className="text-[10px] text-[#7A5A62]">Menunggu</div>
+                        </div>
+                        <div className="bg-white p-2 rounded-xl border border-[#EFE0DB]">
+                          <div className="text-[#D49842] font-bold">30 Pax</div>
+                          <div className="text-[10px] text-[#7A5A62]">Draf Tamu</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Guest Groups Sample */}
+                    <div className="space-y-2 text-xs">
+                      <div className="p-2.5 bg-[#FAF5F2] rounded-xl border border-[#EFE0DB] flex items-center justify-between">
+                        <div>
+                          <div className="font-semibold text-[#3B151C]">Keluarga Besar Ayah & Ibu</div>
+                          <div className="text-[11px] text-[#7A5A62]">120 Undangan • Meja VIP & Depan</div>
+                        </div>
+                        <span className="text-[11px] font-bold text-[#2A7545] bg-[#EAF5E9] px-2 py-0.5 rounded-md">
+                          100% Hadir
+                        </span>
+                      </div>
+                      <div className="p-2.5 bg-[#FAF5F2] rounded-xl border border-[#EFE0DB] flex items-center justify-between">
+                        <div>
+                          <div className="font-semibold text-[#3B151C]">Rekan Kantor & Bisnis</div>
+                          <div className="text-[11px] text-[#7A5A62]">150 Undangan • Resepsi Sesi 2</div>
+                        </div>
+                        <span className="text-[11px] font-bold text-[#3D6980] bg-[#EDF3F7] px-2 py-0.5 rounded-md">
+                          82% Hadir
+                        </span>
+                      </div>
+                      <div className="p-2.5 bg-[#FAF5F2] rounded-xl border border-[#EFE0DB] flex items-center justify-between">
+                        <div>
+                          <div className="font-semibold text-[#3B151C]">Sahabat Kuliah & Komunitas</div>
+                          <div className="text-[11px] text-[#7A5A62]">130 Undangan • Resepsi Malam</div>
+                        </div>
+                        <span className="text-[11px] font-bold text-[#A6752C] bg-[#FFF5E6] px-2 py-0.5 rounded-md">
+                          Proses RSVP
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 mt-3 border-t border-[#F2E5E1]">
+                    <button
+                      type="button"
+                      onClick={() => showToast('Simulasi WhatsApp RSVP berhasil disiapkan! 📲')}
+                      className="w-full py-2.5 text-xs font-semibold text-[#5C222D] bg-[#FFF2F0] hover:bg-[#FCE6E3] border border-[#ECD1D5] rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Send className="w-3.5 h-3.5 text-[#8C3442]" />
+                      <span>Simulasi Kirim Undangan WhatsApp RSVP</span>
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </div>
           )}

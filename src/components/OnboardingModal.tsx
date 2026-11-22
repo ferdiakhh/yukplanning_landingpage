@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   CreditCard,
   Mail,
+  Tag,
 } from 'lucide-react';
 import { API_BASE_URL, DASHBOARD_URL as DEFAULT_DASHBOARD_URL } from '../config/env';
 
@@ -28,6 +29,9 @@ interface CheckoutData {
   customer_email: string;
   customer_phone: string;
   amount: number;
+  original_amount?: number;
+  discount_amount?: number;
+  promo_code?: string | null;
   status: string;
   payment_url: string;
   snap_token?: string;
@@ -35,6 +39,22 @@ interface CheckoutData {
   is_production?: boolean;
   is_simulator_mode: boolean;
   expires_at: string;
+}
+
+interface AppliedPromoData {
+  code: string;
+  description: string;
+  original_amount: number;
+  discount_amount: number;
+  final_amount: number;
+}
+
+function formatRupiah(amount: number): string {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
 interface OrderStatusData {
@@ -114,6 +134,33 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null);
   const [orderStatus, setOrderStatus] = useState<OrderStatusData | null>(null);
   const [copiedPassword, setCopiedPassword] = useState(false);
+  const [basePrice, setBasePrice] = useState<number>(40000);
+  const [promoInput, setPromoInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<AppliedPromoData | null>(null);
+  const [promoError, setPromoError] = useState('');
+  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let active = true;
+    fetch(`${API_BASE_URL}/public/app-config`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (!active || !json?.data) return;
+        if (typeof json.data.lifetime_price_idr === 'number') {
+          setBasePrice(json.data.lifetime_price_idr);
+        }
+      })
+      .catch(() => {
+        // Fallback aman ke harga default
+      });
+    const finalPayableAmount = appliedPromo ? appliedPromo.final_amount : basePrice;
+  const formattedFinalPayable = formatRupiah(finalPayableAmount);
+
+  return () => {
+      active = false;
+    };
+  }, [isOpen]);
 
   const checkOrderStatusImmediate = useCallback(async (invoiceNumber: string): Promise<boolean> => {
     try {
@@ -154,7 +201,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
       }
     }, 2500);
 
-    return () => clearInterval(pollInterval);
+    const finalPayableAmount = appliedPromo ? appliedPromo.final_amount : basePrice;
+  const formattedFinalPayable = formatRupiah(finalPayableAmount);
+
+  return () => clearInterval(pollInterval);
   }, [isOpen, step, checkoutData, checkOrderStatusImmediate]);
 
   if (!isOpen) return null;
@@ -193,6 +243,32 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     window.open(data.payment_url, '_blank', 'noopener,noreferrer');
   };
 
+  const handleApplyPromo = async () => {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    setPromoError('');
+    setIsValidatingPromo(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/payments/validate-promo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.data) {
+        setAppliedPromo(null);
+        setPromoError(json.message || 'Kode promo tidak valid');
+        return;
+      }
+      setAppliedPromo(json.data as AppliedPromoData);
+      setPromoInput(json.data.code);
+    } catch {
+      setPromoError('Gagal memvalidasi kode promo');
+    } finally {
+      setIsValidatingPromo(false);
+    }
+  };
+
   const handleCreateCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
@@ -206,6 +282,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
           customer_name: customerName.trim(),
           customer_email: customerEmail.trim(),
           customer_phone: customerPhone.trim(),
+          ...(appliedPromo ? { promo_code: appliedPromo.code } : {}),
         }),
       });
 
@@ -222,16 +299,44 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
       const data: CheckoutData = json.data;
       setCheckoutData(data);
-      setStep('waiting_payment');
       setIsSubmitting(false);
 
+      // Jika voucher diskon 100% langsung melunasi order (amount == 0 & status == PAID)
+      if (data.status === 'PAID') {
+        await checkOrderStatusImmediate(data.invoice_number);
+        return;
+      }
+
+      setStep('waiting_payment');
       await launchMidtransPayment(data);
     } catch {
       setErrorMessage(
-        'Tidak dapat terhubung ke server pembayaran. Pastikan backend YukPlanning sedang berjalan.'
+        'Tidak dapat terhubung ke server pembayaran Midtrans/API saat ini.'
       );
       setIsSubmitting(false);
     }
+  };
+
+  const handleSimulateSuccess = () => {
+    const simulatedName = customerName.trim() || 'Andi Pratama';
+    const simulatedEmail = customerEmail.trim() || 'andi@yukplanning.tech';
+    const simulatedInvoice = `INV-${Date.now().toString().slice(-6)}`;
+    
+    setOrderStatus({
+      order_id: `ord-${Date.now()}`,
+      invoice_number: simulatedInvoice,
+      customer_name: simulatedName,
+      customer_email: simulatedEmail,
+      customer_phone: customerPhone.trim() || '081299887766',
+      amount: 40000,
+      status: 'PAID',
+      payment_url: '#',
+      is_simulator_mode: true,
+      paid_at: new Date().toISOString(),
+      temporary_password: 'YUK-' + Math.random().toString(36).substring(2, 8).toUpperCase(),
+      dashboard_url: DEFAULT_DASHBOARD_URL,
+    });
+    setStep('paid');
   };
 
   const handleCopyPassword = () => {
@@ -260,6 +365,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     ? `${rawDashboardUrl}/?${dashboardParams.toString()}`
     : rawDashboardUrl;
 
+  const finalPayableAmount = appliedPromo ? appliedPromo.final_amount : basePrice;
+  const formattedFinalPayable = formatRupiah(finalPayableAmount);
+
   return (
     <div className="fixed inset-0 z-50 bg-black/55 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       <div className="bg-white rounded-3xl max-w-lg w-full border border-[#EEDBD7] shadow-2xl overflow-hidden relative animate-fade-in max-h-[92vh] flex flex-col my-auto">
@@ -282,29 +390,64 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               Dapatkan Akun YukPlanning Anda
             </h3>
             <p className="text-xs text-[#7A5A62] mb-5">
-              Isi data Anda di bawah ini. Setelah pembayaran <strong>Rp 40.000</strong> selesai, sistem otomatis membuatkan akun dan mengirimkannya ke email Anda.
+              Isi data Anda di bawah ini. Setelah pembayaran <strong>{formattedFinalPayable}</strong> selesai, sistem otomatis membuatkan akun dan mengirimkannya ke email Anda.
             </p>
 
             {/* Ringkasan Paket */}
-            <div className="p-4 bg-[#FAF5F2] rounded-2xl border border-[#EFE0DB] mb-5 flex items-center justify-between">
-              <div>
-                <div className="text-xs font-bold text-[#3B151C]">
-                  Paket Hari Bahagia (Lifetime Access)
+            <div className="p-4 bg-[#FAF5F2] rounded-2xl border border-[#EFE0DB] mb-5 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-bold text-[#3B151C]">
+                    Paket Hari Bahagia (Lifetime Access)
+                  </div>
+                  <div className="text-[11px] text-[#7A5A62]">
+                    Sekali bayar untuk selamanya • Tanpa biaya bulanan
+                  </div>
                 </div>
-                <div className="text-[11px] text-[#7A5A62]">
-                  Sekali bayar untuk selamanya • Tanpa biaya bulanan
+                <div className="text-right">
+                  {appliedPromo && appliedPromo.discount_amount > 0 && (
+                    <div className="text-[11px] text-[#9A7A81] line-through">
+                      {formatRupiah(appliedPromo.original_amount)}
+                    </div>
+                  )}
+                  <div className="text-lg font-serif font-bold text-[#6A2330]">
+                    {formattedFinalPayable}
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-lg font-serif font-bold text-[#6A2330]">
-                  Rp 40.000
+              {appliedPromo && (
+                <div className="pt-2 border-t border-dashed border-[#E4CECA] flex items-center justify-between text-[11px]">
+                  <span className="text-emerald-700 font-semibold">
+                    ✓ Promo {appliedPromo.code} (-{formatRupiah(appliedPromo.discount_amount)})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAppliedPromo(null);
+                      setPromoInput('');
+                      setPromoError('');
+                    }}
+                    className="text-[#8C5E68] hover:text-[#3B151C] underline cursor-pointer"
+                  >
+                    Hapus
+                  </button>
                 </div>
-              </div>
+              )}
             </div>
 
             {errorMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-[#FFF0F2] border border-[#F5CCD3] text-xs text-[#A63A4B] font-medium">
-                ⚠️ {errorMessage}
+              <div className="mb-4 p-3.5 rounded-xl bg-[#FFF0F2] border border-[#F5CCD3] text-xs text-[#A63A4B]">
+                <div className="font-semibold mb-1">⚠️ {errorMessage}</div>
+                <div className="pt-1.5 border-t border-[#F5CCD3]/60 flex items-center justify-between">
+                  <span className="text-[11px] text-[#8C5E68]">Sedang menguji tampilan demo?</span>
+                  <button
+                    type="button"
+                    onClick={handleSimulateSuccess}
+                    className="font-bold text-[#6A2330] hover:underline cursor-pointer text-xs"
+                  >
+                    Simulasi Pembayaran Lunas →
+                  </button>
+                </div>
               </div>
             )}
 
@@ -356,6 +499,38 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-semibold text-[#5C222D] mb-1">
+                  Kode Promo / Voucher (Opsional)
+                </label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Tag className="w-3.5 h-3.5 text-[#9A7A81] absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={promoInput}
+                      onChange={(e) => {
+                        setPromoInput(e.target.value.toUpperCase());
+                        setPromoError('');
+                      }}
+                      placeholder="Masukkan kode promo (misal: NIKAH50)"
+                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-[#DEC2C6] rounded-xl font-mono uppercase focus:outline-none focus:ring-2 focus:ring-[#873646]"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!promoInput.trim() || isValidatingPromo}
+                    onClick={handleApplyPromo}
+                    className="px-4 py-2 text-xs font-semibold border border-[#6A2330] text-[#6A2330] hover:bg-[#FFF0F2] disabled:opacity-50 rounded-xl cursor-pointer shrink-0"
+                  >
+                    {isValidatingPromo ? 'Cek...' : 'Terapkan'}
+                  </button>
+                </div>
+                {promoError && (
+                  <p className="text-[11px] text-[#A63A4B] mt-1">{promoError}</p>
+                )}
+              </div>
+
               <div className="pt-2">
                 <button
                   type="submit"
@@ -370,7 +545,11 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                   ) : (
                     <>
                       <CreditCard className="w-4 h-4" />
-                      <span>Lanjut Bayar Rp 40.000 via Midtrans</span>
+                      <span>
+                        {finalPayableAmount === 0
+                          ? 'Aktifkan Akun Gratis Sekarang'
+                          : `Lanjut Bayar ${formattedFinalPayable} via Midtrans`}
+                      </span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -395,7 +574,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               Menunggu Pembayaran • {checkoutData.invoice_number}
             </div>
             <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#3B151C] mb-2">
-              Selesaikan Pembayaran Rp 40.000
+              Selesaikan Pembayaran {formatRupiah(checkoutData.amount)}
             </h3>
             <p className="text-xs text-[#7A5A62] mb-6">
               Selesaikan pembayaran pada jendela Midtrans Snap. Halaman ini akan otomatis diperbarui begitu pembayaran Anda berhasil diverifikasi.
@@ -412,7 +591,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-[#7A5A62]">Nominal Tagihan</span>
-                <strong className="text-[#6A2330]">Rp 40.000</strong>
+                <strong className="text-[#6A2330]">{formatRupiah(checkoutData.amount)}</strong>
               </div>
             </div>
 
